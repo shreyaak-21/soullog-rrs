@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOULLOG – RRS Reflection</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Inter,system-ui,sans-serif;
+  background:linear-gradient(to bottom right,#ede9fe,#faf5ff,#dbeafe);
+  min-height:100vh;
+}
+.screen{display:none;min-height:100vh;padding:24px}
+.screen.active{display:flex;animation:fade .4s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.container{max-width:448px;margin:auto;width:100%}
+.card{
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(12px);
+  border-radius:24px;
+  padding:32px;
+  box-shadow:0 20px 40px rgba(0,0,0,.1)
+}
+h1{font-size:26px;margin-bottom:12px;color:#111827;text-align:center}
+p{color:#4b5563;line-height:1.6;text-align:center}
+.btn{
+  width:100%;padding:16px;border-radius:9999px;border:none;
+  background:linear-gradient(to right,#8b5cf6,#3b82f6);
+  color:white;font-size:16px;font-weight:600;cursor:pointer
+}
+.progress-bar{height:8px;background:rgba(255,255,255,.6);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(to right,#8b5cf6,#3b82f6);transition:.4s}
+.answer{
+  background:rgba(255,255,255,.85);
+  padding:16px;border-radius:9999px;
+  text-align:center;cursor:pointer;
+  font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.08)
+}
+.answer:hover{background:white;transform:scale(1.03)}
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="container">
+    <div class="card">
+      <h1>SOULLOG-R Check-in</h1>
+      <p>Select the date for reflection</p><br>
+      <input type="date" id="dateInput"
+        style="width:100%;padding:14px;border-radius:14px;border:1px solid #ddd"><br><br>
+      <button class="btn" onclick="goToCategory()">Begin</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY SELECTION -->
+<div class="screen" id="category">
+  <div class="container">
+    <div class="card">
+
+      <h1>Have any of the following caused you to struggle more than before?</h1>
+      <p>Choose all that apply</p>
+
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px">
+
+        <label class="answer" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Relationship issues</span>
+          <input type="checkbox" value="relationship">
+        </label>
+
+        <label class="answer" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Health issues</span>
+          <input type="checkbox" value="health">
+        </label>
+
+        <label class="answer" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Work-related stress</span>
+          <input type="checkbox" value="career">
+        </label>
+
+        <label class="answer" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Family issues</span>
+          <input type="checkbox" value="family">
+        </label>
+
+        <label class="answer" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Social / loneliness</span>
+          <input type="checkbox" value="social">
+        </label>
+
+      </div>
+
+      <br>
+      <button class="btn" onclick="saveCategories()">Continue</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- QUESTION -->
+<div class="screen" id="question">
+  <div class="container">
+    <div class="card">
+
+      <div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;font-size:14px">
+          <span id="count"></span>
+          <span style="color:#8b5cf6" id="percent"></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="bar"></div>
+        </div>
+      </div>
+
+      <h3 id="qtext" style="text-align:center;margin-bottom:24px"></h3>
+
+      <div id="normalAnswers" style="display:flex;flex-direction:column;gap:12px">
+  <div class="answer" onclick="answer(1)">Almost Never</div>
+  <div class="answer" onclick="answer(2)">Sometimes</div>
+  <div class="answer" onclick="answer(3)">Often</div>
+  <div class="answer" onclick="answer(4)">Almost Always</div>
+</div>
+<!-- Meta Cognitive answers -->
+<div id="metaAnswers" style="display:none;flex-direction:column;gap:12px">
+
+  <label class="answer" style="display:flex;justify-content:space-between">
+    <span>My state of calm</span>
+    <input type="checkbox" value="calm">
+  </label>
+
+  <label class="answer" style="display:flex;justify-content:space-between">
+    <span>My focus</span>
+    <input type="checkbox" value="focus">
+  </label>
+
+  <label class="answer" style="display:flex;justify-content:space-between">
+    <span>My self-worth</span>
+    <input type="checkbox" value="selfworth">
+  </label>
+
+  <label class="answer" style="display:flex;justify-content:space-between">
+    <span>My energy levels</span>
+    <input type="checkbox" value="energy">
+  </label>
+
+  <label class="answer" style="display:flex;justify-content:space-between">
+    <span>My relationships with others</span>
+    <input type="checkbox" value="relationships">
+  </label>
+
+  <button class="btn" onclick="saveMeta()">Continue</button>
+</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="screen" id="processing">
+  <div class="container">
+    <div class="card">
+      <h1>Reflecting…</h1>
+      <p>Understanding your thinking patterns</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   META + QUESTION BANK (UNCHANGED)
+   ========================================================== */
+
+const META_QUESTION = [
+  "To live a better life, what do you think you need to improve?",
+  "m"
+];
+
+/* --- questionBank stays EXACTLY as you provided --- */
+const questionBank = { /* 🔥 SAME CONTENT YOU SHARED – UNMODIFIED 🔥 */ 
+  health: {
+
+    /* ================= SET 1 ================= */
+    1: [
+      ["I keep thinking about how tired or drained I feel.", "b"],
+      ["I replay moments when my mind felt overloaded.", "b"],
+      ["I worry that something is wrong with my mental health.", "b"],
+      ["I repeatedly check how I’m feeling throughout the day.", "b"],
+      ["Mental exhaustion stays on my mind.", "b"],
+      ["I overthink small changes in my mood or energy.", "b"],
+      ["I feel stuck thinking about my mental state.", "b"],
+      ["I reflect on how stress affects my mind and body.", "r"],
+      ["I try to understand what my mental fatigue is telling me.", "r"],
+      META_QUESTION
+    ],
+
+    /* ================= SET 2 ================= */
+    2: [
+      ["I keep thinking about feeling mentally unwell.", "b"],
+      ["I replay thoughts about whether I’m okay or not.", "b"],
+      ["I worry about my mental health more than I want to.", "b"],
+      ["My thoughts circle around stress or anxiety symptoms.", "b"],
+      ["I feel mentally stuck on how I’m feeling.", "b"],
+      ["I overanalyze my emotional reactions.", "b"],
+      ["Thinking about my mental state feels exhausting.", "b"],
+      ["I reflect on how my thoughts influence my wellbeing.", "r"],
+      ["I try to notice patterns in my mental health.", "r"],
+      META_QUESTION
+    ],
+
+    /* ================= SET 3 ================= */
+    3: [
+      ["I replay worries about my mental health.", "b"],
+      ["I feel stuck thinking about stress or anxiety.", "b"],
+      ["I overthink whether I’m coping well enough.", "b"],
+      ["I keep scanning my thoughts for problems.", "b"],
+      ["I worry that my mind won’t slow down.", "b"],
+      ["Mental heaviness stays in my thoughts.", "b"],
+      ["I feel drained by constant self-checking.", "b"],
+      ["I reflect on what helps my mind feel lighter.", "r"],
+      ["I try to understand my emotional limits.", "r"],
+      META_QUESTION
+    ],
+
+    /* ================= SET 4 ================= */
+    4: [
+      ["I keep thinking about feeling mentally overwhelmed.", "b"],
+      ["I replay moments when stress felt too much.", "b"],
+      ["I worry about losing control of my thoughts.", "b"],
+      ["I overthink how my mood changes.", "b"],
+      ["My mind keeps returning to worries about wellbeing.", "b"],
+      ["I feel mentally stuck in a loop.", "b"],
+      ["Overthinking drains my energy.", "b"],
+      ["I reflect on what mental balance means to me.", "r"],
+      ["I try to recognize when I need rest.", "r"],
+      META_QUESTION
+    ],
+
+    /* ================= SET 5 ================= */
+    5: [
+      ["I struggle to stop thinking about my mental state.", "b"],
+      ["I replay thoughts about stress or sadness.", "b"],
+      ["I worry about feeling mentally low.", "b"],
+      ["My thoughts keep circling around how I feel.", "b"],
+      ["I feel mentally exhausted even after resting.", "b"],
+      ["I overthink why I feel this way.", "b"],
+      ["Mental concerns stay with me throughout the day.", "b"],
+      ["I reflect on what helps me cope mentally.", "r"],
+      ["I try to understand my emotional needs.", "r"],
+      META_QUESTION
+    ]
+  },
+
+  relationship: {
+
+   /* ================= SET 1 ================= */
+  1: [
+    ["I keep replaying things said or done in my relationship.", "b"],
+    ["Small conflicts stay in my mind for a long time.", "b"],
+    ["I overthink whether I mattered enough to the other person.", "b"],
+    ["I feel triggered by memories related to this relationship.", "b"],
+    ["I doubt my actions even after the situation is over.", "b"],
+    ["I worry about where this relationship is heading.", "b"],
+    ["Emotional moments from the relationship feel hard to let go.", "b"],
+    ["I try to understand my emotions instead of blaming myself.", "r"],
+    ["I reflect on what this relationship teaches me about myself.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 2 ================= */
+  2: [
+    ["I replay conversations to see where I went wrong.", "b"],
+    ["I feel emotionally stuck on past moments in the relationship.", "b"],
+    ["I fear being misunderstood or rejected.", "b"],
+    ["My mind keeps questioning my worth in the relationship.", "b"],
+    ["I struggle to move on from emotional pain.", "b"],
+    ["I think about “what if” scenarios repeatedly.", "b"],
+    ["Relationship stress affects my mood for the whole day.", "b"],
+    ["I can step back and observe my feelings without judgment.", "r"],
+    ["I reflect on how I want to grow emotionally.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 3 ================= */
+  3: [
+    ["I mentally replay emotional moments again and again.", "b"],
+    ["I overthink how I was treated in the relationship.", "b"],
+    ["I keep analyzing emotional distance or closeness.", "b"],
+    ["I question whether I was enough.", "b"],
+    ["I feel anxious when thinking about relationship stability.", "b"],
+    ["Emotional memories interrupt my focus.", "b"],
+    ["I feel drained thinking about the relationship.", "b"],
+    ["I reflect on what I need emotionally from others.", "r"],
+    ["I try to understand my emotional patterns.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 4 ================= */
+  4: [
+    ["My mind keeps returning to unresolved relationship issues.", "b"],
+    ["I replay moments where I felt hurt or ignored.", "b"],
+    ["I struggle to stop thinking about emotional conflicts.", "b"],
+    ["I fear repeating the same relationship mistakes.", "b"],
+    ["I mentally revisit arguments or emotional moments.", "b"],
+    ["Relationship stress feels mentally exhausting.", "b"],
+    ["I feel emotionally stuck in the past.", "b"],
+    ["I reflect on how I handle emotional closeness.", "r"],
+    ["I try to learn from emotional experiences.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 5 ================= */
+  5: [
+    ["Thoughts about this relationship keep looping in my mind.", "b"],
+    ["I overthink emotional reactions from the other person.", "b"],
+    ["I replay moments where I felt insecure.", "b"],
+    ["I doubt myself after emotional interactions.", "b"],
+    ["I feel mentally stuck in relationship-related thoughts.", "b"],
+    ["Relationship worries affect my peace of mind.", "b"],
+    ["I find it hard to emotionally move forward.", "b"],
+    ["I reflect on what emotional balance means to me.", "r"],
+    ["I try to understand my emotional needs clearly.", "r"],
+    META_QUESTION
+  ]
+},
+
+  career: {
+    /* Same 5-set structure */
+
+  /* ================= SET 1 ================= */
+  1: [
+    ["I keep replaying mistakes related to my studies or work.", "b"],
+    ["I worry a lot about my future career.", "b"],
+    ["I feel pressure to perform even after finishing tasks.", "b"],
+    ["I overthink whether I am doing enough.", "b"],
+    ["Thoughts about success or failure loop in my mind.", "b"],
+    ["I compare my progress with others.", "b"],
+    ["Career-related stress stays with me throughout the day.", "b"],
+    ["I reflect on what kind of work truly matters to me.", "r"],
+    ["I try to understand my strengths beyond grades or results.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 2 ================= */
+  2: [
+    ["I keep thinking about what I could have done better.", "b"],
+    ["I feel anxious about meeting expectations.", "b"],
+    ["I replay academic or work-related conversations in my head.", "b"],
+    ["I worry about falling behind others.", "b"],
+    ["My mind keeps jumping to worst-case career outcomes.", "b"],
+    ["I feel guilty when I am not productive.", "b"],
+    ["Overthinking performance drains my energy.", "b"],
+    ["I reflect on how I define success for myself.", "r"],
+    ["I notice how pressure affects my motivation.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 3 ================= */
+  3: [
+    ["Thoughts about my future keep repeating.", "b"],
+    ["I overanalyze my academic or work performance.", "b"],
+    ["I feel mentally stuck on career decisions.", "b"],
+    ["I doubt my abilities even after doing well.", "b"],
+    ["I worry about making the wrong life choices.", "b"],
+    ["I feel stressed thinking about long-term goals.", "b"],
+    ["Career uncertainty affects my peace of mind.", "b"],
+    ["I reflect on what kind of life I want beyond achievements.", "r"],
+    ["I try to understand my personal goals clearly.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 4 ================= */
+  4: [
+    ["My mind keeps returning to academic or work stress.", "b"],
+    ["I replay moments where I felt I underperformed.", "b"],
+    ["I feel anxious about deadlines even after completing work.", "b"],
+    ["I worry about disappointing others.", "b"],
+    ["I feel pressure to constantly improve.", "b"],
+    ["Career thoughts interrupt my rest or focus.", "b"],
+    ["Thinking about my future feels overwhelming.", "b"],
+    ["I reflect on how pressure affects my wellbeing.", "r"],
+    ["I try to balance ambition with self-care.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 5 ================= */
+  5: [
+    ["I keep thinking about unfinished goals.", "b"],
+    ["I feel stressed when thinking about competition.", "b"],
+    ["I replay feedback or criticism in my head.", "b"],
+    ["I worry about whether I will succeed.", "b"],
+    ["I feel mentally exhausted from planning my future.", "b"],
+    ["I overthink my career direction.", "b"],
+    ["Academic or work stress affects my mood.", "b"],
+    ["I reflect on what motivates me internally.", "r"],
+    ["I try to understand my limits and needs.", "r"],
+    META_QUESTION
+  ]
+},
+
+  family: {
+    /* Same 5-set structure */
+    /* ================= SET 1 ================= */
+  1: [
+    ["I keep replaying family conversations in my mind.", "b"],
+    ["Family expectations stay on my mind for a long time.", "b"],
+    ["I feel mentally stuck on family-related issues.", "b"],
+    ["I worry about disappointing my family.", "b"],
+    ["Unresolved family matters keep bothering me.", "b"],
+    ["I feel emotionally affected by family situations.", "b"],
+    ["Thinking about family issues feels draining.", "b"],
+    ["I reflect on how my family influences who I am.", "r"],
+    ["I try to understand my feelings toward my family.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 2 ================= */
+  2: [
+    ["Family conflicts replay in my thoughts.", "b"],
+    ["I overthink things I said or didn’t say at home.", "b"],
+    ["I feel pressure to meet family expectations.", "b"],
+    ["Family stress follows me throughout the day.", "b"],
+    ["I feel guilty about family-related choices.", "b"],
+    ["I keep thinking about past family disagreements.", "b"],
+    ["Family issues affect my peace of mind.", "b"],
+    ["I reflect on what healthy family boundaries mean to me.", "r"],
+    ["I notice how family dynamics affect my emotions.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 3 ================= */
+  3: [
+    ["My mind keeps returning to family problems.", "b"],
+    ["I replay family moments that hurt me.", "b"],
+    ["I feel emotionally tense around family matters.", "b"],
+    ["I worry about my role within my family.", "b"],
+    ["Family expectations feel overwhelming at times.", "b"],
+    ["I struggle to let go of family-related thoughts.", "b"],
+    ["Family stress affects my mood.", "b"],
+    ["I reflect on what I need emotionally from my family.", "r"],
+    ["I try to understand my emotional reactions at home.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 4 ================= */
+  4: [
+    ["I overthink family situations repeatedly.", "b"],
+    ["Family disagreements stay in my mind.", "b"],
+    ["I feel responsible for family problems.", "b"],
+    ["I worry about how my family sees me.", "b"],
+    ["Family-related stress drains my energy.", "b"],
+    ["I replay emotional moments with family.", "b"],
+    ["Thinking about family issues feels heavy.", "b"],
+    ["I reflect on how family experiences shaped me.", "r"],
+    ["I try to notice my emotional needs at home.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 5 ================= */
+  5: [
+    ["Family-related worries repeat in my mind.", "b"],
+    ["I replay moments where family expectations felt heavy.", "b"],
+    ["I feel emotionally stuck due to family issues.", "b"],
+    ["I worry about making family members unhappy.", "b"],
+    ["Family stress affects my mental wellbeing.", "b"],
+    ["I keep thinking about unresolved family matters.", "b"],
+    ["Thinking about family drains me emotionally.", "b"],
+    ["I reflect on what emotional balance with family means to me.", "r"],
+    ["I try to understand my emotional boundaries.", "r"],
+    META_QUESTION
+  ]
+  },
+
+  social: {
+    /* Same 5-set structure */
+    /* ================= SET 1 ================= */
+  1: [
+    ["I replay social interactions in my head.", "b"],
+    ["I think a lot about things I said or didn’t say to others.", "b"],
+    ["Feeling left out stays with me for a long time.", "b"],
+    ["I worry about how others see me socially.", "b"],
+    ["I overthink small social moments.", "b"],
+    ["I compare my social life with others.", "b"],
+    ["Loneliness lingers even when I try to distract myself.", "b"],
+    ["I reflect on what connection means to me.", "r"],
+    ["I try to understand why certain social moments affect me deeply.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 2 ================= */
+  2: [
+    ["Social situations replay in my thoughts.", "b"],
+    ["I overthink how people reacted to me.", "b"],
+    ["I feel mentally stuck on social interactions.", "b"],
+    ["I worry about being ignored or forgotten.", "b"],
+    ["I replay moments where I felt awkward.", "b"],
+    ["I feel disconnected even around others.", "b"],
+    ["Thinking about social situations drains me.", "b"],
+    ["I reflect on my need for belonging.", "r"],
+    ["I notice patterns in how I connect with people.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 3 ================= */
+  3: [
+    ["I keep replaying moments where I felt excluded.", "b"],
+    ["I overthink whether people like me.", "b"],
+    ["I worry about being judged socially.", "b"],
+    ["Social rejection stays in my thoughts.", "b"],
+    ["I mentally revisit conversations after they end.", "b"],
+    ["I feel lonely even when connected online.", "b"],
+    ["Social thoughts keep looping in my mind.", "b"],
+    ["I reflect on what healthy friendships feel like.", "r"],
+    ["I try to understand my emotional reactions to social situations.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 4 ================= */
+  4: [
+    ["I overthink my place in social groups.", "b"],
+    ["I replay moments where I felt unnoticed.", "b"],
+    ["I worry about being left out.", "b"],
+    ["I feel socially disconnected more than I want to.", "b"],
+    ["I think repeatedly about social mistakes.", "b"],
+    ["I compare my friendships with others’.", "b"],
+    ["Loneliness weighs on my thoughts.", "b"],
+    ["I reflect on what makes me feel socially secure.", "r"],
+    ["I try to notice what kind of connections feel healthy for me.", "r"],
+    META_QUESTION
+  ],
+
+  /* ================= SET 5 ================= */
+  5: [
+    ["Social thoughts repeat in my mind.", "b"],
+    ["I replay conversations long after they end.", "b"],
+    ["I worry about being socially misunderstood.", "b"],
+    ["I feel mentally stuck on social concerns.", "b"],
+    ["I think about rejection more than I want to.", "b"],
+    ["I feel isolated even when people are around.", "b"],
+    ["Social worries drain my energy.", "b"],
+    ["I reflect on what genuine connection means to me.", "r"],
+    ["I try to understand my need for belonging.", "r"],
+    META_QUESTION
+  ]
+  }
+};
+
+/* ==========================================================
+   ENGINE LOGIC
+   ========================================================== */
+
+let activeQuestions = [];
+let selectedCategories = [];
+let idx = 0, brooding = 0, reflection = 0;
+let selectedDate = null;
+let metaAnswer = [];
+
+function getSetFromDate(d){
+  const day = d.getDate();
+  if([1,6,11,16,21,26,31].includes(day)) return 1;
+  if([2,7,12,17,22,27].includes(day)) return 2;
+  if([3,8,13,18,23,28].includes(day)) return 3;
+  if([4,9,14,19,24,29].includes(day)) return 4;
+  return 5;
+}
+
+/* ==========================================================
+   🧠 CORE ASSEMBLY LOGIC (ALL CASES IMPLEMENTED)
+   ========================================================== */
+
+function pick(arr, type, count){
+  return arr.filter(q => q[1] === type).slice(0, count);
+}
+
+function buildQuestions(categories, setNo){
+
+  let finalQs = [];
+
+  // -------- CASE A: ONE CATEGORY --------
+  if (categories.length === 1) {
+  const set = questionBank[categories[0]][setNo];
+  finalQs = [
+    ...set.slice(0, 9),  // 9 scored
+    META_QUESTION        // 1 meta (forced last)
+  ];
+}
+
+  // -------- CASE B: TWO CATEGORIES --------
+  else if(categories.length === 2){
+    const A = questionBank[categories[0]][setNo];
+    const B = questionBank[categories[1]][setNo];
+
+    finalQs = [
+      ...pick(A, "b", 4),
+      ...pick(A, "r", 1),
+      ...pick(B, "b", 3),
+      ...pick(B, "r", 1),
+      META_QUESTION
+    ];
+  }
+
+  // -------- CASE C: THREE CATEGORIES --------
+  else if(categories.length === 3){
+    const A = questionBank[categories[0]][setNo];
+    const B = questionBank[categories[1]][setNo];
+    const C = questionBank[categories[2]][setNo];
+
+    finalQs = [
+      ...pick(A, "b", 2),
+      ...pick(A, "r", 1),
+      ...pick(B, "b", 2),
+      ...pick(B, "r", 1),
+      ...pick(C, "b", 3),
+      META_QUESTION
+    ];
+  }
+
+  return finalQs.slice(0,10);
+}
+
+function saveCategories(){
+  const checked = document.querySelectorAll('#category input:checked');
+
+  if(checked.length === 0){
+    alert("Please select at least one option.");
+    return;
+  }
+
+  selectedCategories = [...checked].map(c => c.value);
+
+  localStorage.setItem(
+    "selectedCategories",
+    JSON.stringify(selectedCategories)
+  );
+
+  show("question");   // move to assessment
+  startAssessment(); // build questions
+}
+
+function goToCategory(){
+  const d = document.getElementById("dateInput").value;
+  if(!d){ alert("Select a date"); return; }
+
+  selectedDate = new Date(d);
+  show("category");
+}
+
+function startAssessment(){
+  const setNo = getSetFromDate(selectedDate);
+
+  const categories = JSON.parse(
+    localStorage.getItem("selectedCategories")
+  );
+
+  activeQuestions = buildQuestions(categories, setNo);
+
+  idx = 0;
+  brooding = 0;
+  reflection = 0;
+
+  render();
+}
+
+function render(){
+  const q = activeQuestions[idx];
+
+  // Meta question detected
+  if (q[1] === "m") {
+    showMetaQuestion(q[0]);
+    return;
+  }
+
+  showNormalQuestion(q[0]);
+}
+function showNormalQuestion(text) {
+  qtext.innerText = text;
+  document.getElementById("normalAnswers").style.display = "flex";
+  document.getElementById("metaAnswers").style.display = "none";
+}
+
+function showMetaQuestion(text) {
+  qtext.innerText = text;
+  document.getElementById("normalAnswers").style.display = "none";
+  document.getElementById("metaAnswers").style.display = "flex";
+}
+function saveMeta(){
+  const checked = document.querySelectorAll("#metaAnswers input:checked");
+  metaAnswer = [...checked].map(c => c.value);
+
+  localStorage.setItem("metaLifestyleFocus", JSON.stringify(metaAnswer));
+
+  idx++;
+  idx < 10 ? render() : finish();
+}
+
+function answer(val){
+  const type = activeQuestions[idx][1];
+  if(type === "b") brooding += val;
+  if(type === "r") reflection += val;
+  idx++;
+  idx < 10 ? render() : finish();
+}
+
+
+function finish(){
+  show("processing");
+
+  setTimeout(() => {
+    const yyyy = selectedDate.getFullYear();
+    const mm = String(selectedDate.getMonth()+1).padStart(2,'0');
+    const dd = String(selectedDate.getDate()).padStart(2,'0');
+
+   const scoredQuestions = activeQuestions.filter(q => q[1] !== "m");
+
+const broodingCount = scoredQuestions.filter(q => q[1] === "b").length;
+const reflectionCount = scoredQuestions.filter(q => q[1] === "r").length;
+
+localStorage.setItem("rrsResult", JSON.stringify({
+  date: `${yyyy}-${mm}-${dd}`,
+  brooding,
+  reflection,
+  overall: brooding + reflection,
+  maxBrooding: broodingCount * 4,
+  maxReflection: reflectionCount * 4,
+  maxOverall: (broodingCount + reflectionCount) * 4
+}));
+
+    window.location.href = "result.html";
+  }, 1500);
+}
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+</script>
+
+</body>
+</html>

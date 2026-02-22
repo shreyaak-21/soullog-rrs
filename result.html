@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOULLOG – Reflection Summary</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Inter,system-ui,sans-serif;
+  background:linear-gradient(to bottom right,#ede9fe,#faf5ff,#dbeafe);
+  min-height:100vh;
+  padding:24px;
+}
+.container{max-width:480px;margin:auto}
+.card{
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(12px);
+  border-radius:24px;
+  padding:28px;
+  box-shadow:0 20px 40px rgba(0,0,0,.1);
+  margin-bottom:24px;
+}
+h1{font-size:26px;color:#111827;margin-bottom:8px}
+h2{font-size:18px;color:#111827;margin-bottom:6px}
+p{color:#4b5563;line-height:1.6;font-size:15px}
+
+.metric{margin-top:20px}
+.metric-header{
+  display:flex;justify-content:space-between;
+  font-size:14px;margin-bottom:6px
+}
+.metric-header span:first-child{color:#374151;font-weight:500}
+.metric-header span:last-child{color:#8b5cf6}
+
+.bar-bg{
+  width:100%;height:10px;
+  background:rgba(209,213,219,.4);
+  border-radius:999px;overflow:hidden
+}
+.bar-fill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(to right,#8b5cf6,#3b82f6);
+  transition:width .8s ease
+}
+
+/* ✅ ADDED: score text (non-intrusive) */
+.score-text{
+  font-size:12px;
+  color:#6b7280;
+  margin-top:6px;
+}
+
+.note{
+  background:#faf5ff;
+  border-radius:16px;
+  padding:16px;
+  margin-top:24px
+}
+.note p{font-size:14px;color:#581c87}
+
+.tag-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.tag{
+  background:#eef2ff;
+  color:#4338ca;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:13px
+}
+
+.done-btn {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  padding: 10px 18px;
+  background: linear-gradient(to right, #8b5cf6, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.done-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.2);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+    <h1>Your Reflection Snapshot</h1>
+    <p id="dateText"></p>
+
+    <!-- Thinking Activity -->
+    <div class="metric">
+      <div class="metric-header">
+        <span>Thinking Activity</span>
+        <span>Overall Pattern</span>
+      </div>
+      <div class="bar-bg">
+        <div class="bar-fill" id="total-bar"></div>
+      </div>
+      <div class="score-text" id="total-score"></div>
+    </div>
+
+    <!-- Thought Loops -->
+    <div class="metric">
+      <div class="metric-header">
+        <span>Thought Loops</span>
+        <span>Repetitive Thinking</span>
+      </div>
+      <div class="bar-bg">
+        <div class="bar-fill" id="brooding-bar"></div>
+      </div>
+      <div class="score-text" id="brooding-score"></div>
+    </div>
+
+    <!-- Reflective Awareness -->
+    <div class="metric">
+      <div class="metric-header">
+        <span>Reflective Awareness</span>
+        <span>Meaning-Making</span>
+      </div>
+      <div class="bar-bg">
+        <div class="bar-fill" id="reflection-bar"></div>
+      </div>
+      <div class="score-text" id="reflection-score"></div>
+    </div>
+  </div>
+
+  <!-- Major Causing Categories -->
+<div class="card">
+  <h2>Major Causing Categories</h2>
+  <p>Based on what you selected before the reflection</p>
+
+  <div class="tag-row" id="categoryTags"></div>
+</div>
+
+  <!-- AI Interpretation -->
+  <div class="card">
+    <h2>AI-Guided Insight</h2>
+    <p id="aiText"></p>
+
+    <div class="note">
+      <p>
+        This reflection is not a diagnosis. It highlights thinking styles that
+        may fluctuate with stress, context, and self-awareness.
+      </p>
+    </div>
+
+    <div class="tag-row">
+      <div class="tag">rumination</div>
+      <div class="tag">self-reflection</div>
+      <div class="tag">cognitive patterns</div>
+    </div>
+  </div>
+
+  <button class="done-btn" onclick="goHome()">Done</button>
+
+
+</div>
+
+<script>
+const data = JSON.parse(localStorage.getItem("rrsResult"));
+
+if (!data) {
+  window.location.href = "index.html";
+}
+
+const { brooding, reflection, overall, date } = data;
+/* ---------- MAJOR CAUSING CATEGORIES ---------- */
+
+const categoryMap = {
+  health: "Health issues",
+  relationship: "Relationship issues",
+  career: "Work-related stress",
+  family: "Family issues",
+  social: "Social / loneliness"
+};
+
+const selectedCategories =
+  JSON.parse(localStorage.getItem("selectedCategories")) || [];
+
+const tagContainer = document.getElementById("categoryTags");
+
+if (selectedCategories.length === 0) {
+  tagContainer.innerHTML = "<span class='tag'>Not specified</span>";
+} else {
+  selectedCategories.forEach(cat => {
+    const tag = document.createElement("div");
+    tag.className = "tag";
+    tag.innerText = categoryMap[cat] || cat;
+    tagContainer.appendChild(tag);
+  });
+}
+
+/* ---------- UI LOGIC (UNCHANGED) ---------- */
+
+const totalPct = Math.min((overall / data.maxOverall) * 100, 100);
+const broodingPct = Math.min((brooding / data.maxBrooding) * 100, 100);
+const reflectionPct = Math.min((reflection / data.maxReflection) * 100, 100);
+
+document.getElementById("total-bar").style.width = totalPct + "%";
+document.getElementById("brooding-bar").style.width = broodingPct + "%";
+document.getElementById("reflection-bar").style.width = reflectionPct + "%";
+
+document.getElementById("total-score").innerText =
+  `Ruminative Responses Scale: ${overall} / ${data.maxOverall}`;
+
+document.getElementById("brooding-score").innerText =
+  `Brooding: ${brooding} / ${data.maxBrooding}`;
+
+document.getElementById("reflection-score").innerText =
+  `Reflection: ${reflection} / ${data.maxReflection}`;
+
+
+/* ---------- AI INSIGHT ---------- */
+
+let insight = "";
+
+if (broodingPct > 65) {
+  insight += "Your responses suggest that certain thoughts may be looping and revisiting themselves frequently. ";
+} else {
+  insight += "Your thinking patterns show a moderate level of repetition that may fluctuate with daily stress. ";
+}
+
+if (reflectionPct > 60) {
+  insight += "At the same time, you demonstrate a strong capacity for reflective awareness — an ability to step back and make sense of emotions. ";
+} else {
+  insight += "Reflection appears present, though it may sometimes be overshadowed by mental noise. ";
+}
+
+insight +=
+  "Building gentle pauses, journaling, or structured reflection can help balance thinking activity over time.";
+
+document.getElementById("aiText").innerText = insight;
+
+/* ---------- SAVE TO BACKEND (ONLY ONCE) ---------- */
+
+fetch('/api/save_reflection', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'same-origin',
+  body: JSON.stringify({
+    date: date,
+    ruminative: overall,
+    brooding: brooding,
+    reflection: reflection,
+    ai_insight: insight
+  })
+})
+.then(res => res.json())
+.then(data => console.log("Saved:", data))
+.catch(err => console.error("Save error:", err));
+
+function goHome() {
+  localStorage.removeItem("rrsResult"); // optional cleanup
+  window.location.href = "/home.html";
+}
+
+</script>
+
+
+</body>
+</html>
